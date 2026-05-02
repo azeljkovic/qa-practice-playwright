@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test:headless": "playwright test",
+    "test:ui": "playwright test --ui"
+  },
   "keywords": [],
   "author": "Aleksandar Zeljkovic",
   "license": "ISC",
