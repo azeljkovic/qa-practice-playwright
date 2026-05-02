@@ -5,14 +5,17 @@ export class LoginPage {
   readonly emailInput: Locator;
   readonly passwordInput: Locator;
   readonly submitButton: Locator;
+  readonly errorAlert: Locator;
   readonly logoutLink: Locator;
   readonly proceedToCheckoutButton: Locator;
+  readonly url = '/auth_ecommerce';
 
   constructor(page: Page) {
     this.page = page;
     this.emailInput = page.getByLabel('Email');
     this.passwordInput = page.getByLabel('Password');
     this.submitButton = page.getByTestId('submitBtn');
+    this.errorAlert = page.getByRole('alert');
     this.logoutLink = page.getByRole('link', { name: 'Log Out' });
     this.proceedToCheckoutButton = page.getByRole('button', {
       name: /proceed to checkout/i,
@@ -20,12 +23,16 @@ export class LoginPage {
   }
 
   async goto() {
-    await this.page.goto('/auth_ecommerce');
+    await this.page.goto(this.url);
   }
 
   async login(email: string, password: string) {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     await this.submitButton.click();
+  }
+
+  async assertOnLoginPage() {
+    await this.page.waitForURL(this.url);
   }
 }
