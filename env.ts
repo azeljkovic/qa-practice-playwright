@@ -1,9 +1,14 @@
-// Instead of dotenv, we can use the built-in loadEnvFile function from Node.js (v24+)
-// to load environment variables from a .env file without an additional dependency
+// Load local development variables from `.env` when the file exists.
+// In CI, secrets are typically injected directly into process.env instead.
+import { existsSync } from 'node:fs';
 import { loadEnvFile } from 'node:process';
 import path from 'node:path';
 
-loadEnvFile(path.resolve(__dirname, '.env'));
+const envFilePath = path.resolve(__dirname, '.env');
+
+if (existsSync(envFilePath)) {
+  loadEnvFile(envFilePath);
+}
 
 function required(name: string): string {
   const value = process.env[name];
