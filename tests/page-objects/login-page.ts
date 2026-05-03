@@ -35,4 +35,14 @@ export class LoginPage {
   async assertOnLoginPage() {
     await this.page.waitForURL(this.url);
   }
+
+  async bypassLogin() {
+  await this.page.goto(this.url);
+  await this.page.evaluate(() => {
+    const result = document.getElementById('message');
+    // @ts-expect-error page script defines this globally
+    window.setSuccessAlert(result, env.email);
+  });
+}
+
 }
