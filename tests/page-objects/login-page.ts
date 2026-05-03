@@ -41,7 +41,7 @@ export class LoginPage {
   await this.page.evaluate(() => {
     const result = document.getElementById('message');
     // @ts-expect-error page script defines this globally
-    window.setSuccessAlert(result, env.email);
+    window.setSuccessAlert(result, 'admin@admin.com');
   });
 }
 
