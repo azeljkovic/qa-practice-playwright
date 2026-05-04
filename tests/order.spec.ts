@@ -1,8 +1,8 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 import { LoginPage } from "./pageObjects/loginPage";
 import { CheckoutPage } from "./pageObjects/checkoutPage";
 import { OrderConfirmationPage } from "./pageObjects/orderConfirmationPage";
-import { ShopPage } from "./pageObjects/shopPage";
+import { OrderPage } from "./pageObjects/orderPage";
 import {
   defaultShippingDetails,
   expectedOrderProductsAfterModification,
@@ -11,57 +11,57 @@ import {
 
 test("shopping cart validity", async ({ page }) => {
   const loginPage = new LoginPage(page);
-  const shopPage = new ShopPage(page);
+  const orderPage = new OrderPage(page);
 
   await loginPage.bypassLogin();
 
-  await shopPage.addProductsToCart(orderProducts);
+  await orderPage.addProductsToCart(orderProducts);
 
-  await shopPage.assertCartItems(orderProducts);
-  await shopPage.assertCartTotal();
+  await orderPage.assertCartItems(orderProducts);
+  await orderPage.assertCartTotal();
 });
 
 test("shopping cart modification", async ({ page }) => {
   const loginPage = new LoginPage(page);
-  const shopPage = new ShopPage(page);
+  const orderPage = new OrderPage(page);
 
   await loginPage.bypassLogin();
 
-  await shopPage.addProductsToCart(orderProducts);
-  await shopPage.applyCartModifications(orderProducts);
+  await orderPage.addProductsToCart(orderProducts);
+  await orderPage.applyCartModifications(orderProducts);
 
-  await shopPage.assertCartRowCount(
+  await orderPage.assertCartRowCount(
     expectedOrderProductsAfterModification.length,
   );
-  await shopPage.assertCartItems(
+  await orderPage.assertCartItems(
     expectedOrderProductsAfterModification,
     (product) => product.quantity,
   );
-  await shopPage.assertCartTotal();
+  await orderPage.assertCartTotal();
 });
 
 // ignoring the fact that this logic conflicts with the previous test
 test("forbid adding product to the cart twice", async ({ page }) => {
   const loginPage = new LoginPage(page);
-  const shopPage = new ShopPage(page);
+  const orderPage = new OrderPage(page);
 
   await loginPage.bypassLogin();
 
-  await shopPage.addProductToCartTwice(orderProducts[0].name);
+  await orderPage.addProductToCartTwice(orderProducts[0].name);
 });
 
 test("full checkout flow", async ({ page }) => {
   const loginPage = new LoginPage(page);
-  const shopPage = new ShopPage(page);
+  const orderPage = new OrderPage(page);
   const checkoutPage = new CheckoutPage(page);
   const orderConfirmationPage = new OrderConfirmationPage(page);
 
   await loginPage.bypassLogin();
 
-  await shopPage.addProductsToCart(orderProducts);
-  const expectedTotal = await shopPage.getCartTotal();
+  await orderPage.addProductsToCart(orderProducts);
+  const expectedTotal = await orderPage.getCartTotal();
 
-  await shopPage.proceedToCheckout();
+  await orderPage.proceedToCheckout();
   await checkoutPage.placeOrder(defaultShippingDetails);
 
   await orderConfirmationPage.assertCheckoutSuccess(

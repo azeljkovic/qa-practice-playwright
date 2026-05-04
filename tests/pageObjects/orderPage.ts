@@ -3,10 +3,10 @@ import { expect, type Locator, type Page } from "@playwright/test";
 export type Product = {
   name: string;
   price: string;
-  quantity: string;
+  quantity: number;
 };
 
-export class ShopPage {
+export class OrderPage {
   readonly page: Page;
   readonly cartRows: Locator;
   readonly cartTotalPrice: Locator;
@@ -44,21 +44,19 @@ export class ShopPage {
     await this.addProductToCart(productName);
   }
 
-  async updateCartItemQuantity(productName: string, quantity: string) {
+  async updateCartItemQuantity(productName: string, quantity: number) {
     await this.cartRow(productName)
       .locator(".cart-quantity-input")
-      .fill(quantity);
+      .fill(quantity.toString());
   }
 
   async applyCartModifications(products: Product[]) {
     for (const product of products) {
-      const quantity = Number.parseInt(product.quantity, 10);
-
-      if (quantity === 0) {
+      if (product.quantity === 0) {
         await this.removeProductFromCart(product.name);
       }
 
-      if (quantity > 1) {
+      if (product.quantity > 1) {
         await this.updateCartItemQuantity(product.name, product.quantity);
       }
     }
@@ -82,22 +80,27 @@ export class ShopPage {
     await expect(this.cartRows).toHaveCount(count);
   }
 
-  async assertCartItem(product: Product, expectedQuantity = "1") {
+  async assertCartItem(product: Product, expectedQuantity = 1) {
     const row = this.cartRow(product.name);
     const removeButton = row.getByRole("button", { name: "REMOVE" });
 
     await expect(row).toBeVisible();
     await expect(row.locator(".cart-price")).toHaveText(product.price);
     await expect(row.locator(".cart-quantity-input")).toHaveValue(
-      expectedQuantity,
+      expectedQuantity.toString(),
     );
     await expect(removeButton).toBeVisible();
     await expect(removeButton).toBeEnabled();
   }
 
+  /**
+   * Verifies that each expected product appears in the cart with the correct quantity.
+   * By default, each product is expected to have quantity "1", but a custom quantity
+   * resolver can be provided for cases where quantities vary per product.
+   */
   async assertCartItems(
     products: Product[],
-    expectedQuantity: (product: Product) => string = () => "1",
+    expectedQuantity: (product: Product) => number = () => 1,
   ) {
     for (const product of products) {
       await this.assertCartItem(product, expectedQuantity(product));
@@ -111,6 +114,10 @@ export class ShopPage {
     expect(actualTotal).toBeCloseTo(expectedTotal, 2);
   }
 
+  /**
+   * Calculates the expected cart total by summing each cart row's
+   * item price multiplied by its selected quantity.
+   */
   private async calculateCartTotal() {
     const rowCount = await this.cartRows.count();
     let expectedTotal = 0;

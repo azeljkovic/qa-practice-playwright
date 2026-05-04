@@ -3,7 +3,7 @@ import { env } from "../env";
 import { CheckoutPage } from "./pageObjects/checkoutPage";
 import { LoginPage } from "./pageObjects/loginPage";
 import { OrderConfirmationPage } from "./pageObjects/orderConfirmationPage";
-import { ShopPage } from "./pageObjects/shopPage";
+import { OrderPage } from "./pageObjects/orderPage";
 import {
   defaultShippingDetails,
   orderProducts,
@@ -11,7 +11,7 @@ import {
 
 test("happy flow: login, order products, and logout", async ({ page }) => {
   const loginPage = new LoginPage(page);
-  const shopPage = new ShopPage(page);
+  const shopPage = new OrderPage(page);
   const checkoutPage = new CheckoutPage(page);
   const orderConfirmationPage = new OrderConfirmationPage(page);
 
