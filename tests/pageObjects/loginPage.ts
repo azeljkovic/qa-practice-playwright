@@ -68,6 +68,7 @@ export class LoginPage {
     await expect(this.submitButton).toBeVisible();
   }
 
+  // This method bypasses the login form via client-side JavaScript
   async bypassLogin() {
     await this.page.goto(this.url);
     await this.page.evaluate(() => {
