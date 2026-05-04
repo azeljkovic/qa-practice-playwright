@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page } from "@playwright/test";
-import { type ShippingDetails } from "./checkout-page";
+import { type ShippingDetails } from "./checkoutPage";
 
 export class OrderConfirmationPage {
   readonly message: Locator;

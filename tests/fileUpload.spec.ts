@@ -1,11 +1,11 @@
 import { test } from "@playwright/test";
 import path from "node:path";
-import { FileUploadPage } from "./page-objects/file-upload-page";
+import { FileUploadPage } from "./pageObjects/fileUploadPage";
 
 test("regular file upload", async ({ page }) => {
   const fileUploadPage = new FileUploadPage(page);
   const fileName = "sample.txt";
-  const filePath = path.resolve(__dirname, `./fixtures/${fileName}`);
+  const filePath = path.resolve(__dirname, `./testAssets/${fileName}`);
 
   await fileUploadPage.goto();
   await fileUploadPage.uploadFile(filePath);

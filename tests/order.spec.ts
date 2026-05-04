@@ -1,40 +1,13 @@
 import { test, expect } from "@playwright/test";
-import { LoginPage } from "./page-objects/login-page";
+import { LoginPage } from "./pageObjects/loginPage";
+import { CheckoutPage } from "./pageObjects/checkoutPage";
+import { OrderConfirmationPage } from "./pageObjects/orderConfirmationPage";
+import { ShopPage } from "./pageObjects/shopPage";
 import {
-  CheckoutPage,
-  type ShippingDetails,
-} from "./page-objects/checkout-page";
-import { OrderConfirmationPage } from "./page-objects/order-confirmation-page";
-import { ShopPage, type Product } from "./page-objects/shop-page";
-
-const products: Product[] = [
-  {
-    name: "Apple iPhone 12",
-    price: "$905.99",
-    quantity: "1",
-  },
-  {
-    name: "Huawei Mate 20 Lite",
-    price: "$236.12",
-    quantity: "3",
-  },
-  {
-    name: "Samsung Galaxy A32",
-    price: "$286.99",
-    quantity: "0",
-  },
-];
-
-const expectedProducts = products.filter(
-  (product) => Number.parseInt(product.quantity, 10) > 0,
-);
-
-const shippingDetails: ShippingDetails = {
-  phone: "+381601234567",
-  street: "Dunavska 4",
-  city: "Novi Sad",
-  country: "Republic of Serbia",
-};
+  defaultShippingDetails,
+  expectedOrderProductsAfterModification,
+  orderProducts,
+} from "./testData/orderData";
 
 test("shopping cart validity", async ({ page }) => {
   const loginPage = new LoginPage(page);
@@ -42,9 +15,9 @@ test("shopping cart validity", async ({ page }) => {
 
   await loginPage.bypassLogin();
 
-  await shopPage.addProductsToCart(products);
+  await shopPage.addProductsToCart(orderProducts);
 
-  await shopPage.assertCartItems(products);
+  await shopPage.assertCartItems(orderProducts);
   await shopPage.assertCartTotal();
 });
 
@@ -54,12 +27,14 @@ test("shopping cart modification", async ({ page }) => {
 
   await loginPage.bypassLogin();
 
-  await shopPage.addProductsToCart(products);
-  await shopPage.applyCartModifications(products);
+  await shopPage.addProductsToCart(orderProducts);
+  await shopPage.applyCartModifications(orderProducts);
 
-  await shopPage.assertCartRowCount(expectedProducts.length);
+  await shopPage.assertCartRowCount(
+    expectedOrderProductsAfterModification.length,
+  );
   await shopPage.assertCartItems(
-    expectedProducts,
+    expectedOrderProductsAfterModification,
     (product) => product.quantity,
   );
   await shopPage.assertCartTotal();
@@ -72,7 +47,7 @@ test("forbid adding product to the cart twice", async ({ page }) => {
 
   await loginPage.bypassLogin();
 
-  await shopPage.addProductToCartTwice(products[0].name);
+  await shopPage.addProductToCartTwice(orderProducts[0].name);
 });
 
 test("full checkout flow", async ({ page }) => {
@@ -83,14 +58,14 @@ test("full checkout flow", async ({ page }) => {
 
   await loginPage.bypassLogin();
 
-  await shopPage.addProductsToCart(products);
+  await shopPage.addProductsToCart(orderProducts);
   const expectedTotal = await shopPage.getCartTotal();
 
   await shopPage.proceedToCheckout();
-  await checkoutPage.placeOrder(shippingDetails);
+  await checkoutPage.placeOrder(defaultShippingDetails);
 
   await orderConfirmationPage.assertCheckoutSuccess(
-    shippingDetails,
+    defaultShippingDetails,
     expectedTotal,
   );
 });
