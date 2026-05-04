@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 import { env } from "../env";
 import { LoginPage } from "./pageObjects/loginPage";
 
@@ -8,10 +8,7 @@ test("valid login", async ({ page }) => {
   await loginPage.goto();
   await loginPage.login(env.email, env.password);
 
-  await loginPage.assertOnLoginPage();
-
-  await expect(loginPage.logoutLink).toBeVisible();
-  await expect(loginPage.proceedToCheckoutButton).toBeVisible();
+  await loginPage.assertLoggedIn();
 });
 
 [
@@ -32,12 +29,7 @@ test("valid login", async ({ page }) => {
     await loginPage.goto();
     await loginPage.login(email, password);
 
-    await loginPage.assertOnLoginPage();
-    await expect(loginPage.errorAlert).toBeVisible();
-    await expect(loginPage.errorAlert).toContainText("Bad credentials!");
-
-    await expect(loginPage.logoutLink).not.toBeVisible();
-    await expect(loginPage.proceedToCheckoutButton).not.toBeVisible();
+    await loginPage.assertBadCredentials();
   });
 });
 

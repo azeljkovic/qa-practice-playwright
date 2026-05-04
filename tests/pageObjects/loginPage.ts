@@ -41,6 +41,20 @@ export class LoginPage {
     await this.page.waitForURL(this.logoutUrl);
   }
 
+  async assertLoggedIn() {
+    await this.assertOnLoginPage();
+    await expect(this.logoutLink).toBeVisible();
+    await expect(this.proceedToCheckoutButton).toBeVisible();
+  }
+
+  async assertBadCredentials() {
+    await this.assertOnLoginPage();
+    await expect(this.errorAlert).toBeVisible();
+    await expect(this.errorAlert).toContainText('Bad credentials!');
+    await expect(this.logoutLink).not.toBeVisible();
+    await expect(this.proceedToCheckoutButton).not.toBeVisible();
+  }
+
   async logout() {
     await this.logoutLink.click();
   }
