@@ -1,4 +1,4 @@
-import { type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 export class LoginPage {
   readonly page: Page;
@@ -9,6 +9,7 @@ export class LoginPage {
   readonly logoutLink: Locator;
   readonly proceedToCheckoutButton: Locator;
   readonly url = '/auth_ecommerce';
+  readonly logoutUrl = '/auth_ecommerce.html';
 
   constructor(page: Page) {
     this.page = page;
@@ -36,13 +37,29 @@ export class LoginPage {
     await this.page.waitForURL(this.url);
   }
 
-  async bypassLogin() {
-  await this.page.goto(this.url);
-  await this.page.evaluate(() => {
-    const result = document.getElementById('message');
-    // @ts-expect-error page script defines this globally
-    window.setSuccessAlert(result, 'admin@admin.com');
-  });
-}
+  async assertOnLogoutPage() {
+    await this.page.waitForURL(this.logoutUrl);
+  }
 
+  async logout() {
+    await this.logoutLink.click();
+  }
+
+  async assertLoggedOut() {
+    await this.assertOnLogoutPage();
+    await expect(this.logoutLink).not.toBeVisible();
+    await expect(this.proceedToCheckoutButton).not.toBeVisible();
+    await expect(this.emailInput).toBeVisible();
+    await expect(this.passwordInput).toBeVisible();
+    await expect(this.submitButton).toBeVisible();
+  }
+
+  async bypassLogin() {
+    await this.page.goto(this.url);
+    await this.page.evaluate(() => {
+      const result = document.getElementById('message');
+      // @ts-expect-error page script defines this globally
+      window.setSuccessAlert(result, 'admin@admin.com');
+    });
+  }
 }

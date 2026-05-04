@@ -40,3 +40,11 @@ test("valid login", async ({ page }) => {
     await expect(loginPage.proceedToCheckoutButton).not.toBeVisible();
   });
 });
+
+test("logout", async ({ page }) => {
+  const loginPage = new LoginPage(page);
+
+  await loginPage.bypassLogin();
+  await loginPage.logout();
+  await loginPage.assertLoggedOut();
+});
