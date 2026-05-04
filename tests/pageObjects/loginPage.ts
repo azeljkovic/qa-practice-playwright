@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export class LoginPage {
   readonly page: Page;
@@ -8,17 +8,17 @@ export class LoginPage {
   readonly errorAlert: Locator;
   readonly logoutLink: Locator;
   readonly proceedToCheckoutButton: Locator;
-  readonly url = '/auth_ecommerce';
-  readonly logoutUrl = '/auth_ecommerce.html';
+  readonly url = "/auth_ecommerce";
+  readonly logoutUrl = "/auth_ecommerce.html";
 
   constructor(page: Page) {
     this.page = page;
-    this.emailInput = page.getByLabel('Email');
-    this.passwordInput = page.getByLabel('Password');
-    this.submitButton = page.getByTestId('submitBtn');
-    this.errorAlert = page.getByRole('alert');
-    this.logoutLink = page.getByRole('link', { name: 'Log Out' });
-    this.proceedToCheckoutButton = page.getByRole('button', {
+    this.emailInput = page.getByLabel("Email");
+    this.passwordInput = page.getByLabel("Password");
+    this.submitButton = page.getByTestId("submitBtn");
+    this.errorAlert = page.getByRole("alert");
+    this.logoutLink = page.getByRole("link", { name: "Log Out" });
+    this.proceedToCheckoutButton = page.getByRole("button", {
       name: /proceed to checkout/i,
     });
   }
@@ -50,7 +50,7 @@ export class LoginPage {
   async assertBadCredentials() {
     await this.assertOnLoginPage();
     await expect(this.errorAlert).toBeVisible();
-    await expect(this.errorAlert).toContainText('Bad credentials!');
+    await expect(this.errorAlert).toContainText("Bad credentials!");
     await expect(this.logoutLink).not.toBeVisible();
     await expect(this.proceedToCheckoutButton).not.toBeVisible();
   }
@@ -72,9 +72,9 @@ export class LoginPage {
   async bypassLogin() {
     await this.page.goto(this.url);
     await this.page.evaluate(() => {
-      const result = document.getElementById('message');
+      const result = document.getElementById("message");
       // @ts-expect-error page script defines this globally
-      window.setSuccessAlert(result, 'admin@admin.com');
+      window.setSuccessAlert(result, "admin@admin.com");
     });
   }
 }
