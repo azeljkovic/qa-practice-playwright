@@ -43,6 +43,10 @@ TEST_PASSWORD=your-test-password
 
 The test configuration check if variables exist and loads them through `env.ts` helper. In CI, the same values are expected to be provided as environment secrets.
 
+## CI
+
+Tests are configured to run via GitHub actions, results can be found on https://github.com/azeljkovic/qa-practice-playwright/actions
+
 ## Test Structure
 
 ```text
